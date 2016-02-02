@@ -12,7 +12,7 @@ import datetime
 import locale
 import time
 
-import simplejson
+import json
 import logging
 import datetime
 import urllib
@@ -81,7 +81,7 @@ class Guestbook(webapp.RequestHandler):
         global ring
         
         content = self.request.get('json')
-        jsonObj = simplejson.loads(content)
+        jsonObj = json.loads(content)
 
         date = datetime.datetime.utcfromtimestamp(jsonObj["date"])
 
