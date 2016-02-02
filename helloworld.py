@@ -17,6 +17,7 @@ import logging
 import datetime
 import urllib
 
+from collections import deque
 import copy
 class RingBuffer:
     def __init__(self,size):
@@ -46,6 +47,7 @@ class RingBuffer:
         return self.end - self.start
 
 ring = RingBuffer(400)
+que = deque([],400)
 
 class Greeting(db.Model):
 
@@ -86,6 +88,7 @@ class Guestbook(webapp.RequestHandler):
         date = datetime.datetime.utcfromtimestamp(jsonObj["date"])
 
         ring.add(int(time.mktime(date.timetuple()))*1000,jsonObj["value"])
+	que.append([int(time.mktime(date.timetuple()))*1000,jsonObj["value"]])
         logging.info('Post')
 #        self.redirect('/')
 
@@ -93,7 +96,7 @@ class Getjson(webapp.RequestHandler):
     def get(self):
         global ring
 
-        contstr = str(ring.get())
+        contstr = str(list(que))
         logging.info('ring = %s' % contstr)
         dst = contstr.replace('L', '')
         self.response.out.write(dst)
