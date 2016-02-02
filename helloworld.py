@@ -18,35 +18,7 @@ import datetime
 import urllib
 
 from collections import deque
-import copy
-class RingBuffer:
-    def __init__(self,size):
-        self.buffer = [[0 for i in range(2)] for j in range(size)]
-        self.start = 0
-        self.end = 0
-        logging.info('NNNNNNNNNNNNNNNNew')
-
-    def add(self,date,val):
-        logging.info('add start')
-        self.buffer[self.end][0] = date
-        self.buffer[self.end][1] = val
-        self.end = (self.end + 1) % len(self.buffer)
-        logging.info('add end')
-    def get(self):
-         logging.info('get start')
-         l = copy.deepcopy(self.buffer)
-         l.sort()
-         while [0,0] in l: l.remove([0,0])
-         logging.info('get end')
-         return l
-#        val = self.buffer[self.start]
-#        self.start =(self.start + 1) % len(self.buffer)
-#        return val
-
-    def __len__(self):
-        return self.end - self.start
-
-ring = RingBuffer(400)
+#import copy
 que = deque([],400)
 
 class Greeting(db.Model):
@@ -80,24 +52,20 @@ class MainPage(webapp.RequestHandler):
 class Guestbook(webapp.RequestHandler):
     def post(self):
 
-        global ring
-        
         content = self.request.get('json')
         jsonObj = json.loads(content)
 
         date = datetime.datetime.utcfromtimestamp(jsonObj["date"])
 
-        ring.add(int(time.mktime(date.timetuple()))*1000,jsonObj["value"])
 	que.append([int(time.mktime(date.timetuple()))*1000,jsonObj["value"]])
         logging.info('Post')
 #        self.redirect('/')
 
 class Getjson(webapp.RequestHandler):
     def get(self):
-        global ring
 
         contstr = str(list(que))
-        logging.info('ring = %s' % contstr)
+        logging.info('que = %s' % contstr)
         dst = contstr.replace('L', '')
         self.response.out.write(dst)
 #"""
